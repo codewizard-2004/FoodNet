@@ -1,0 +1,102 @@
+id,label,calories,protein,carbs,fat,fiber,sugar
+1,apple pie,265,2.4,37.1,12.5,2,20
+2,baby back ribs,282,16.1,0,23.6,0,0
+3,baklava,428,6.7,37.6,29,2.6,12.7
+4,beef carpaccio,119,22.3,0,2.6,0,0
+5,beef tartare,210,17.8,0.6,14.6,0.9,1.1
+6,beet salad,35,1,8,0,1,6
+7,beignets,290,7,40,29,1,10
+8,bibimbap,130,8.9,14,4.7,1.8,2.6
+9,bread pudding,153,5.3,23.3,4.7,0,0
+10,breakfast burrito,202,10.7,11.9,12.3,0.8,1.7
+11,Bruschetta,150,4,22,5,2.5,3
+12,Caesar Salad,190,7,10,15,3,2.5
+13,Cannoli,375,6,36,22,2,14
+14,Caprese Salad,250,9,5,20,1,3.5
+15,Carrot Cake,420,5.5,52,22,2,32
+16,Ceviche,100,16,5,2,0.5,1
+17,Cheese Plate,350,21,2,29,0,0.5
+18,Cheesecake,321,6,29,22,0,23
+19,Chicken Curry,190,25,8,6,1,3
+20,Chicken Quesadilla,340,20,30,15,2,2
+21,Chicken Wings,290,23,0,21,0,0
+22,Chocolate Cake,370,4.5,50,17,2,35
+23,Chocolate Mousse,320,5,27,22,1,24
+24,Churros,386,3.5,41.5,22,1.5,12
+25,Clam Chowder,90,3,8,5,1,2
+26,Club Sandwich,250,13,20,13,2,3
+27,Crab Cakes,220,14,10,14,1,1
+28,Creme Brulee,330,5,28,23,0,26
+29,Croque Madame,305,17,20,18,1.5,2
+30,Cupcakes,356,4,51,16,1,38
+31,Deviled Eggs,200,9,1,18,0,1
+32,Donuts,452,4.9,51,25,1.5,24
+33,Dumplings,230,8,25,10,1.5,2
+34,Edamame,121,11.9,8.9,5.2,5,2.2
+35,Eggs Benedict,290,12,12,23,1,1
+36,Escargots,172,16,2,11,0,0
+37,Falafel,333,13,31.8,17.8,4.9,1
+38,Filet Mignon,250,26,0,17,0,0
+39,Fish and Chips,280,13,22,17,2,0.5
+40,Foie Gras,462,7,1,44,0,0
+41,French Fries,312,3.4,41.4,15,3.8,0.3
+42,French Onion Soup,65,2.2,5.8,3.8,0.6,2.5
+43,French Toast,219,6,25,10,1.2,8
+44,Fried Calamari,175,15,6,10,0.5,0
+45,Fried Rice,168,3,23,7,1.2,1
+46,Frozen Yogurt,127,4,23,3,0,20
+47,Garlic Bread,350,8,36,19,2.5,2
+48,Gnocchi,150,3,30,1,2,0.5
+49,Greek Salad,98,3,6,7,2.5,3
+50,Grilled Cheese Sandwich,320,11,33,18,2,3
+51,Grilled Salmon,206,22,0,13,0,0
+52,Guacamole,160,2,9,14,6.7,0.7
+53,Gyoza,200,8,23,9,1.5,1
+54,Hamburger,250,13,27,10,1,5
+55,Hot and Sour Soup,65,3,6,2.5,0.5,1.5
+56,Hot Dog,290,11,2,26,0,1
+57,Huevos Rancheros,180,9,12,11,2,2.5
+58,Hummus,166,8,14,10,6,0.3
+59,Ice Cream,207,3.5,24,11,0.5,21
+60,Lasagna,135,7,15,5,1.5,4
+61,Lobster Bisque,120,6,7,8,0.3,3
+62,Lobster Roll Sandwich,310,16,28,16,2,3
+63,Macaroni and Cheese,164,6,19,7,1,2
+64,Macarons,413,5,46,23,2.5,36
+65,Miso Soup,40,3,5,1,0.5,1
+66,Mussels,172,24,7,4,0,0
+67,Nachos,326,8,32,18,3,2
+68,Omelette,154,11,1.5,11,0,1
+69,Onion Rings,411,3,45,24,2.5,5
+70,Oysters,81,9,5,2,0,0
+71,Pad Thai,294,8,44,10,2,8
+72,Paella,158,10,16,5,1.5,1
+73,Pancakes,227,6,28,10,1,5
+74,Panna Cotta,250,4,20,18,0,18
+75,Peking Duck,337,19,5,28,0.5,0.5
+76,Pho,90,7,10,3,1,1
+77,Pizza,266,11,33,10,2.3,3.8
+78,Pork Chop,231,25,0,14,0,0
+79,Poutine,312,5.5,33,18,2.5,1.5
+80,Prime Rib,317,21,0,26,0,0
+81,Pulled Pork Sandwich,350,28,30,15,2,8
+82,Ramen,436,10,54,18,2,1
+83,Ravioli,220,7,30,8,2,2
+84,Red Velvet Cake,390,4,45,22,1,34
+85,Risotto,190,6,28,5,1,2
+86,Samosa,262,6,30,14,3.5,1
+87,Sashimi,132,27,0,3,0,0
+88,Scallops,111,20,5,1,0,0
+89,Seaweed Salad,70,2,9,3,1.5,2
+90,Shrimp and Grits,305,22,23,15,1,1
+91,Spaghetti Bolognese,221,10,25,9,2,5
+92,Spaghetti Carbonara,384,13,30,23,1,2
+93,Spring Rolls,120,4,20,3,2,3
+94,Steak,271,25,0,18,0,0
+95,Strawberry Shortcake,350,4,40,20,1,30
+96,Sushi,200,8,28,5,1,3
+97,Tacos,226,12,22,10,2.5,2
+98,Takoyaki,175,6,23,7,1,2
+99,Tiramisu,240,5,31,11,0,21
+100,Tuna Tartare,120,20,2,3,0,0
+101,Waffles,291,8,33,14,1,5

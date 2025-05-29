@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { UploadCloud, Image as ImageIcon, Lightbulb, Zap, Scale, Brain, FileText, Github, Moon, Sun, XCircle, CheckCircle, Eye, Edit3, Utensils, History, MessageSquareWarning, Send, BarChart3, ListChecks, Search } from 'lucide-react';
+import {food101SampleItems} from "@/app/foodsamples"
 
 // Define a type for the prediction result
 interface PredictionResult {
@@ -33,29 +34,7 @@ interface ProbabilityItem {
   value: number;
 }
 
-const food101SampleItems = [
-  "Apple Pie", "Baby Back Ribs", "Baklava", "Beef Carpaccio", "Beef Tartare",
-  "Beet Salad", "Beignets", "Bibimbap", "Bread Pudding", "Breakfast Burrito",
-  "Bruschetta", "Caesar Salad", "Cannoli", "Caprese Salad", "Carrot Cake",
-  "Ceviche", "Cheesecake", "Chicken Curry", "Chicken Quesadilla", "Chicken Wings",
-  "Chocolate Cake", "Chocolate Mousse", "Churros", "Clam Chowder", "Club Sandwich",
-  "Crab Cakes", "Creme Brulee", "Croque Madame", "Cupcakes", "Deviled Eggs",
-  "Donuts", "Dumplings", "Edamame", "Eggs Benedict", "Escargots",
-  "Falafel", "Filet Mignon", "Fish And Chips", "Foie Gras", "French Fries",
-  "French Onion Soup", "French Toast", "Fried Calamari", "Fried Rice", "Frozen Yogurt",
-  "Garlic Bread", "Gnocchi", "Greek Salad", "Grilled Cheese Sandwich", "Grilled Salmon",
-  "Guacamole", "Gyoza", "Hamburger", "Hot And Sour Soup", "Hot Dog",
-  "Huevos Rancheros", "Hummus", "Ice Cream", "Lasagna", "Lobster Bisque",
-  "Lobster Roll Sandwich", "Macaroni And Cheese", "Macarons", "Miso Soup", "Mussels",
-  "Nachos", "Omelette", "Onion Rings", "Oysters", "Pad Thai",
-  "Paella", "Pancakes", "Panna Cotta", "Peking Duck", "Pho",
-  "Pizza", "Pork Chop", "Poutine", "Prime Rib", "Pulled Pork Sandwich",
-  "Ramen", "Ravioli", "Red Velvet Cake", "Risotto", "Samosa",
-  "Sashimi", "Scallops", "Seaweed Salad", "Shrimp And Grits", "Spaghetti Bolognese",
-  "Spaghetti Carbonara", "Spring Rolls", "Steak", "Strawberry Shortcake", "Sushi",
-  "Tacos", "Takoyaki", "Tiramisu", "Tuna Tartare", "Waffles"
-  // This is a selection, Food101 has 101 categories.
-];
+
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false);
@@ -81,6 +60,11 @@ export default function HomePage() {
   const [isLoadingPredictableItems, setIsLoadingPredictableItems] = useState(false);
   const [predictableItemsSearchTerm, setPredictableItemsSearchTerm] = useState("");
   const [filteredPredictableItems, setFilteredPredictableItems] = useState<string[]>(food101SampleItems);
+   const models = [
+    { name: "model_0", displayName: "Model 0"},
+    { name: "model_1", displayName: "Model 1"},
+  ]
+  const [selectedModel, setSelectedModel] = useState(models[0].name); // Default model
 
   useEffect(() => {
     setMounted(true);
@@ -126,6 +110,10 @@ export default function HomePage() {
 
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
+    console.log({
+      "model": selectedModel,
+      "image": selectedImage.name,
+    })
 
     // Dummy prediction data
     setPrediction({
@@ -244,6 +232,9 @@ export default function HomePage() {
     );
   }
 
+ 
+  
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Header */}
@@ -274,12 +265,17 @@ export default function HomePage() {
               <CardDescription>Choose a model trained on food recognition</CardDescription>
             </CardHeader>
             <CardContent>
-              <Select defaultValue="efficientnet-b0">
+              <Select onValueChange={(value) => setSelectedModel(value)} value={selectedModel} >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a model" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="efficientnet-b0">EfficientNet-B0</SelectItem>
+                  {/*<SelectItem value="efficientnet-b0">EfficientNet-B0</SelectItem>*/}
+                  {models.map((model) => (
+                    <SelectItem key={model.name} value={model.name}>
+                      {model.displayName}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </CardContent>
