@@ -43,7 +43,7 @@ async def submit_feedback(
             public_url = None
 
         supabase.table("feedback").insert({
-            "model  ": model_name,
+            "model": model_name,
             "predicted": predicted,
             "response": response,
             "image": public_url # type: ignore

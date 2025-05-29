@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent, DragEvent } from "react";
+import { useState, useEffect, ChangeEvent, DragEvent, use } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,8 +13,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { UploadCloud, Image as ImageIcon, Lightbulb, Zap, Scale, Brain, FileText, Github, Moon, Sun, XCircle, CheckCircle, Eye, Edit3, Utensils, History, MessageSquareWarning, Send, BarChart3, ListChecks, Search } from 'lucide-react';
+import { UploadCloud, Image as ImageIcon, Lightbulb, Zap, Scale, Brain, FileText, Github, Moon, Sun, XCircle, CheckCircle, Eye, Edit3, Utensils, History, MessageSquareWarning, Send, BarChart3, ListChecks, Search, Key } from 'lucide-react';
 import {food101SampleItems} from "@/app/foodsamples"
+import { useMutation } from "@tanstack/react-query";
+import { error } from "console";
 
 // Define a type for the prediction result
 interface PredictionResult {
@@ -83,6 +85,8 @@ export default function HomePage() {
     }
   }, [predictableItemsSearchTerm]);
 
+
+
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -98,6 +102,123 @@ export default function HomePage() {
     }
   };
 
+  // Define the argument type for the mutation function
+  interface PredictArgs {
+    file: File;
+    model: string;
+  }
+
+  interface PredictResponse {
+    success: boolean;
+    model: string;
+    class_name: string;
+    confidence_scores: {[key: string]: number};
+    class_id: Int16Array,
+    nutrients: {
+      id: Int16Array;
+      calories: string;
+      protein: string;
+      carbs: string;
+      fat: string;
+      fiber: string;
+      sugar: string;
+    }
+  }
+
+
+  const { mutate: usePredict, isError, isPending } = useMutation({
+  mutationFn: async ({ file, model }: PredictArgs) => {
+    const formData = new FormData();
+    formData.append('file', file);           // file: File object
+    formData.append('model_name', model);    // model: "model_0" or "model_1"
+
+    const res = await fetch('http://localhost:8000/predict', {
+      method: 'POST',
+      body: formData, // No need to set Content-Type manually
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch prediction');
+    }
+
+    const data: PredictResponse = await res.json();
+    return data;
+  },
+
+  onSuccess: (data: PredictResponse) => {
+    if (data.success) {
+      console.log("Prediction data:", data);
+      
+      setPrediction({
+        name: data.class_name,
+        confidence: Math.round(data.confidence_scores[data.class_name] * 100),
+        calories: data.nutrients.calories,
+        protein: data.nutrients.protein,       
+        carbs: data.nutrients.carbs,         
+        fat: data.nutrients.fat,           
+        fiber: data.nutrients.fiber,        
+        sugar: data.nutrients.sugar,        
+      });
+      setIsLoading(false);
+      setShowFeedbackButtons(true);
+      setTopProbabilitiesData(
+        Object.entries(data.confidence_scores)
+          .map(([name, value]) => ({ name, value: Math.round(value * 100) }))
+          .sort((a, b) => b.value - a.value)
+          .slice(0, 5) // Show top 5 probabilities
+      );
+    } else {
+      toast.error("Prediction failed. Please try again.");
+    }
+  },
+  onError: (error: any) => {
+    setIsLoading(false);
+    console.error("Prediction error:", error);
+    toast.error(error.message || "An error occurred while fetching prediction. Please try again.");
+  }
+});
+
+interface FeedbackArgs {
+  model_name: string;
+  image: File | null;
+  predicted: string;
+  response: string;
+}
+
+const {mutate: useFeedback, isPending: isFeedBackPending} = useMutation({
+  mutationFn: async ({model_name , image, predicted , response}: FeedbackArgs) => {
+    const formData = new FormData();
+    formData.append('model_name', model_name); // model: "model_0" or "model_1"
+    formData.append('predicted', predicted); // predicted food item
+    formData.append('response', response); // user feedback (corrected food item)
+    if (image) {
+      formData.append('image', image); // Optional: include the image file if available
+    }
+    const res = await fetch('http://localhost:8000/feedback', {
+      method: 'POST',
+      body: formData, // No need to set Content-Type manually
+    });
+    if (!res.ok) {
+      throw new Error('Failed to submit feedback');
+    }
+    const data = await res.json();
+    return data;
+  },
+
+  onSuccess: ()=>{
+    setIsSubmitFeedBackLoading(false);
+    toast.info(`Feedback submitted: ${correctPredictionInput}`, { description: "Thanks for helping us improve our model!" });
+    setCorrectPredictionInput("");
+    setIsDialogCorrectPredictionOpen(false);
+    setShowFeedbackButtons(false);
+  },
+  onError: (error: any) => {
+    setIsSubmitFeedBackLoading(false);
+    console.error("Feedback error:", error);
+    toast.error(error.message || "An error occurred while submitting feedback. Please try again.");
+  }
+})
+
 
   const handlePredict = async () => {
     if (!selectedImage) return;
@@ -107,27 +228,11 @@ export default function HomePage() {
     setActiveTab("prediction-results"); // Switch to prediction tab
     setShowFeedbackButtons(false);
     setTopProbabilitiesData([]); // Clear previous probabilities
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    console.log({
-      "model": selectedModel,
-      "image": selectedImage.name,
+    
+    usePredict({
+      file: selectedImage,
+      model: selectedModel
     })
-
-    // Dummy prediction data
-    setPrediction({
-      name: "Pizza",
-      confidence: 92,
-      calories: "285 kcal",
-      protein: "12g",
-      carbs: "36g",
-      fat: "10g",
-      fiber: "2.5g",
-      sugar: "3.5g",
-    });
-    setIsLoading(false);
-    setShowFeedbackButtons(true);
   };
   
   // Placeholder for drag and drop handlers
@@ -168,30 +273,17 @@ export default function HomePage() {
         return;
     }
     setIsSubmitFeedBackLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsSubmitFeedBackLoading(false);
-    toast.info(`Feedback submitted: ${correctPredictionInput}`, { description: "Thanks for helping us improve our model!" });
-    setCorrectPredictionInput("");
-    setIsDialogCorrectPredictionOpen(false);
-    setShowFeedbackButtons(false);
+    useFeedback({
+      model_name: selectedModel,
+      image: selectedImage, // Include the image file if available
+      predicted: prediction?.name || "",
+      response: correctPredictionInput.trim()
+    })
+    
   };
 
-  const handleViewTopProbabilities = async () => {
+  const handleViewTopProbabilities = () => {
     setIsProbabilitiesModalOpen(true);
-    setIsLoadingProbabilities(true);
-    setTopProbabilitiesData([]); // Clear previous data
-
-    // Simulate API call for probabilities
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Dummy data for top 5 probabilities
-    setTopProbabilitiesData([
-      { name: "Pizza", value: 92 },
-      { name: "Calzone", value: 78 },
-      { name: "Flatbread", value: 65 },
-      { name: "Pasta Dish", value: 50 },
-      { name: "Not Food", value: 30 },
-    ]);
     setIsLoadingProbabilities(false);
   };
 
@@ -265,7 +357,9 @@ export default function HomePage() {
               <CardDescription>Choose a model trained on food recognition</CardDescription>
             </CardHeader>
             <CardContent>
-              <Select onValueChange={(value) => setSelectedModel(value)} value={selectedModel} >
+              <Select onValueChange={(value) => {
+                console.log("Selected model:", selectedModel);
+                setSelectedModel(value)}} value={selectedModel} >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a model" />
                 </SelectTrigger>
@@ -513,8 +607,8 @@ export default function HomePage() {
             <DialogClose asChild>
                 <Button variant="outline" disabled={isSubmitFeedBackLoading}>Cancel</Button>
             </DialogClose>
-            <Button onClick={handleSubmitCorrectedPrediction} disabled={isSubmitFeedBackLoading}>
-              {isSubmitFeedBackLoading ? <span className="loading-spinner"></span> : <Send className="mr-2 h-4 w-4"/>}
+            <Button onClick={handleSubmitCorrectedPrediction} disabled={isFeedBackPending}>
+              {isFeedBackPending ? <span className="loading-spinner"></span> : <Send className="mr-2 h-4 w-4"/>}
               Submit Feedback
             </Button>
           </DialogFooter>

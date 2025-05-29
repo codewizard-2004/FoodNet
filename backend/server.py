@@ -27,6 +27,9 @@ client = get_supabase_client()
 if client is None:
     raise ValueError("Failed to create Supabase client. Check your credentials.")
 
+@app.get("/")
+async def root():
+    return {"status": "ok"}
 
 app.include_router(predict.router)
 app.include_router(feedback.router)

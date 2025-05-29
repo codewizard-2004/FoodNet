@@ -3,6 +3,7 @@ from PIL import Image
 from fastapi.responses import JSONResponse
 from backend.utils.inference import load_model, predict
 import io
+from backend.supabase_client import get_supabase_client
 
 router = APIRouter()
 
@@ -21,13 +22,24 @@ async def predict_image(
             raise HTTPException(status_code=400, detail="Invalid image file.")
         
         model = load_model(model_name, device="cpu")  # Change to "cuda" if using GPU
-        class_name, confidence_scores = predict(model, image)
+        class_name, class_id , confidence_scores = predict(model, image)
+
+        if class_id < 0 or class_id > 101:
+            raise HTTPException(status_code=400, detail="Invalid class ID. Should be in range 0-101")
+        print("\nClass\n:"+str(class_id))
+        
+        supabse = get_supabase_client()
+        respose = supabse.table("Nutrients").select("*").eq("id", class_id).execute()
+        if not respose.data:  # type: ignore
+            raise HTTPException(status_code=404, detail="No data found for the given class ID.")
 
         return JSONResponse({
             "success": True,
             "model": model_name,
             "class_name": class_name,
-            "confidence_scores": confidence_scores
+            "confidence_scores": confidence_scores,
+            "class_id": class_id,
+            "nutrients": respose.data[0]
         })
     except Exception as e:
         print(f"Error during prediction: {e}")

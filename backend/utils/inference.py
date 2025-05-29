@@ -41,7 +41,7 @@ def load_model(model_name: str, device: str) -> torch.nn.Module:
 
 
 
-def predict(model: torch.nn.Module, image: Image.Image ) -> Tuple[str , Dict[str, float]]:
+def predict(model: torch.nn.Module, image: Image.Image ) -> Tuple[str ,int , Dict[str, float]]:
     """
     Make a prediction using the loaded model and inputted data.
 
@@ -68,6 +68,6 @@ def predict(model: torch.nn.Module, image: Image.Image ) -> Tuple[str , Dict[str
     pred_class = int(torch.argmax(pred_probs, dim=1).item())
     pred_scores = {classes[i]: float(pred_probs[0, i]) for i in range(len(classes))}
 
-    return classes[pred_class], pred_scores
+    return classes[pred_class], pred_class,  pred_scores
 
 
