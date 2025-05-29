@@ -15,8 +15,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { UploadCloud, Image as ImageIcon, Lightbulb, Zap, Scale, Brain, FileText, Github, Moon, Sun, XCircle, CheckCircle, Eye, Edit3, Utensils, History, MessageSquareWarning, Send, BarChart3, ListChecks, Search, Key } from 'lucide-react';
 import {food101SampleItems} from "@/app/foodsamples"
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { error } from "console";
+import Loading from "@/components/Loading";
+import { usePing } from "@/hooks/usePing";
 
 // Define a type for the prediction result
 interface PredictionResult {
@@ -68,9 +70,12 @@ export default function HomePage() {
   ]
   const [selectedModel, setSelectedModel] = useState(models[0].name); // Default model
 
+  const [globalLoading , setGlobalLoading] = useState(false);
+
   useEffect(() => {
-    setMounted(true);
+    setMounted(false);
   }, []);
+  const {isLoading: isPingLoading, isError: isPingError} = usePing();
 
   // Effect to filter predictable items based on search term
   useEffect(() => {
@@ -297,7 +302,7 @@ const {mutate: useFeedback, isPending: isFeedBackPending} = useMutation({
     setIsLoadingPredictableItems(false);
   };
 
-  if (!mounted) {
+  if (isPingLoading) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col">
         <header className="py-4 px-6 flex justify-between items-center border-b">
@@ -310,6 +315,7 @@ const {mutate: useFeedback, isPending: isFeedBackPending} = useMutation({
             <Button variant="ghost" size="icon" disabled><Moon className="h-5 w-5" /></Button>
           </div>
         </header>
+        {/*
         <main className="flex-1 p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-1 flex flex-col gap-6">
                 <Skeleton className="h-[150px] w-full rounded-lg" />
@@ -319,7 +325,8 @@ const {mutate: useFeedback, isPending: isFeedBackPending} = useMutation({
             <div className="md:col-span-2">
                 <Skeleton className="h-full w-full rounded-lg" />
             </div>
-        </main>
+        </main> */}
+        <Loading/>
       </div>
     );
   }
