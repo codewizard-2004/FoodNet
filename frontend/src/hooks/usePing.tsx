@@ -1,11 +1,13 @@
 // hooks/usePing.ts
 import { useQuery } from "@tanstack/react-query";
 
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export const usePing = () => {
   return useQuery({
     queryKey: ["ping"],
     queryFn: async () => {
-      const response = await fetch("http://localhost:8000");
+      const response = await fetch(`${backendUrl}`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
