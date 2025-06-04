@@ -45,6 +45,8 @@ export default function HomePage() {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
 
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -139,7 +141,7 @@ export default function HomePage() {
     formData.append('file', file);           // file: File object
     formData.append('model_name', model);    // model: "model_0" or "model_1"
 
-    const res = await fetch('http://localhost:8000/predict', {
+    const res = await fetch(`${backendUrl}/predict`, {
       method: 'POST',
       body: formData, // No need to set Content-Type manually
     });
@@ -201,7 +203,7 @@ const {mutate: useFeedback, isPending: isFeedBackPending} = useMutation({
     if (image) {
       formData.append('image', image); // Optional: include the image file if available
     }
-    const res = await fetch('http://localhost:8000/feedback', {
+    const res = await fetch(`${backendUrl}/feedback`, {
       method: 'POST',
       body: formData, // No need to set Content-Type manually
     });
