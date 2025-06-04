@@ -1,25 +1,23 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent, DragEvent, use } from "react";
+import { useState, useEffect, ChangeEvent, DragEvent } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { UploadCloud, Image as ImageIcon, Lightbulb, Zap, Scale, Brain, FileText, Github, Moon, Sun, XCircle, CheckCircle, Eye, Edit3, Utensils, History, MessageSquareWarning, Send, BarChart3, ListChecks, Search, Key } from 'lucide-react';
+import { UploadCloud, Image as ImageIcon, Lightbulb, Zap, Scale, Brain, FileText, Github, Moon, Sun, XCircle, CheckCircle, Edit3, Utensils, History, MessageSquareWarning, Send, BarChart3, ListChecks, Search} from 'lucide-react';
 import {food101SampleItems} from "@/app/foodsamples"
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { error } from "console";
+import { useMutation} from "@tanstack/react-query";
 import Loading from "@/components/Loading";
 import { usePing } from "@/hooks/usePing";
-import { getDisplayName } from "next/dist/shared/lib/utils";
 
 // Define a type for the prediction result
 interface PredictionResult {
@@ -43,6 +41,7 @@ interface ProbabilityItem {
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false);
+  console.log(mounted)
   const { theme, setTheme } = useTheme();
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -74,12 +73,10 @@ export default function HomePage() {
   ]
   const [selectedModel, setSelectedModel] = useState(models[0].name); // Default model
 
-  const [globalLoading , setGlobalLoading] = useState(false);
-
   useEffect(() => {
     setMounted(false);
   }, []);
-  const {isLoading: isPingLoading, isError: isPingError} = usePing();
+  const {isLoading: isPingLoading} = usePing();
 
   // Effect to filter predictable items based on search term
   useEffect(() => {

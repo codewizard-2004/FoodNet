@@ -12,7 +12,7 @@ export const usePing = () => {
       console.log("Ping successful");
       return true;
     },
-    retry: 5,
+    retry: 10,
     retryDelay: attemptIndex => 1000 * (attemptIndex + 1),
   });
 };
