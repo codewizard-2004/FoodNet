@@ -4,8 +4,13 @@ from fastapi.responses import JSONResponse
 from backend.utils.inference import load_model, predict
 import io
 from backend.supabase_client import get_supabase_client
+import torch
 
 router = APIRouter()
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
+
 
 @router.post("/predict")
 async def predict_image(
@@ -21,7 +26,7 @@ async def predict_image(
         if image is None:
             raise HTTPException(status_code=400, detail="Invalid image file.")
         
-        model = load_model(model_name, device="cpu")  # Change to "cuda" if using GPU
+        model = load_model(model_name, device=torch.device(device))  # Change to "cuda" if using GPU
         class_name, class_id , confidence_scores = predict(model, image)
 
         if class_id < 0 or class_id > 101:

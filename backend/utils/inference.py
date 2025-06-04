@@ -9,6 +9,7 @@ from backend.models.architecture import TinyVGG
 model_map = {
     "model_0": "backend/models/sample_model_0.pth",
     "model_1": "backend/models/sample_model_1.pth",
+    "pizza_steak_sushi": "backend/models/pizza_steak_sushi.pth.pt"
 }
 
 test_transform = transforms.Compose([
@@ -16,9 +17,18 @@ test_transform = transforms.Compose([
     transforms.ToTensor(),
 ])
 
+test_transform2 = transforms.Compose([
+    transforms.Resize(size = (224 , 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(                     # Normalize to ImageNet mean/std
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    )
+])
+
 classes = ["Pizza", "Steak" , "Sushi"]
 
-def load_model(model_name: str, device: str) -> torch.nn.Module:
+def load_model(model_name: str, device: torch.device) -> torch.nn.Module:
     """
     Load a model from the specified path.
     
@@ -33,8 +43,12 @@ def load_model(model_name: str, device: str) -> torch.nn.Module:
     
     
     model_path = model_map[model_name]
-    state_dict = torch.load(model_path, map_location=torch.device(device), weights_only=True)
-    model = TinyVGG(input_shape=3, hidden_units=10, output_shape=len(classes)).to(device)
+    if model_name == "pizza_steak_sushi":
+        checkpoint = torch.load(model_path, map_location=device)
+        state_dict = checkpoint["model_state_dict"]
+    else:
+        state_dict = torch.load(model_path, map_location=torch.device(device), weights_only=True)
+    model = TinyVGG(input_layer=3, hidden_layer=10, output_layer=len(classes)).to(device)
     model.load_state_dict(state_dict)
     return model
 
@@ -55,7 +69,7 @@ def predict(model: torch.nn.Module, image: Image.Image ) -> Tuple[str ,int , Dic
     """
     if not isinstance(image, Image.Image):
         raise ValueError("Input must be a PIL Image.")
-    input_tensor = test_transform(image)
+    input_tensor = test_transform2(image)
     if not isinstance(input_tensor, torch.Tensor):
         raise ValueError("Transformed image is not a tensor.")
     input_tensor = input_tensor.unsqueeze(0)  # Add batch dimension

@@ -19,6 +19,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { error } from "console";
 import Loading from "@/components/Loading";
 import { usePing } from "@/hooks/usePing";
+import { getDisplayName } from "next/dist/shared/lib/utils";
 
 // Define a type for the prediction result
 interface PredictionResult {
@@ -65,6 +66,7 @@ export default function HomePage() {
   const [predictableItemsSearchTerm, setPredictableItemsSearchTerm] = useState("");
   const [filteredPredictableItems, setFilteredPredictableItems] = useState<string[]>(food101SampleItems);
    const models = [
+    {name: "pizza_steak_sushi", displayName:" TinyVGG Beta"},
     { name: "model_0", displayName: "Model 0"},
     { name: "model_1", displayName: "Model 1"},
   ]
