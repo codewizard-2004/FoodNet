@@ -223,10 +223,14 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
     setIsDialogCorrectPredictionOpen(false);
     setShowFeedbackButtons(false);
   },
-  onError: (error: any) => {
+  onError: (error: unknown) => {
     setIsSubmitFeedBackLoading(false);
     console.error("Feedback error:", error);
-    toast.error(error.message || "An error occurred while submitting feedback. Please try again.");
+    const errorMessage =
+      typeof error === "object" && error !== null && "message" in error
+        ? (error as { message?: string }).message
+        : undefined;
+    toast.error(errorMessage || "An error occurred while submitting feedback. Please try again.");
   }
 })
 
@@ -491,7 +495,7 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
               ) : prediction ? (
                 <div className="space-y-6">
                   <div>
-                    <p className="text-sm text-muted-foreground">Model's analysis of the food image</p>
+                    <p className="text-sm text-muted-foreground">Model&apos;s analysis of the food image</p>
                     <div className="flex items-center space-x-2 mt-1">
                         <Utensils className="h-7 w-7 text-primary" />
                         <h2 className="text-2xl font-semibold">{prediction.name}</h2>
@@ -526,10 +530,10 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
                        <h4 className="text-md font-semibold mb-3 text-center">Is this prediction correct?</h4>
                       <div className="flex gap-4">
                         <Button variant="destructive" className="flex-1" onClick={handleNoIncorrect}>
-                          <XCircle className="mr-2 h-4 w-4" /> No, it's incorrect
+                          <XCircle className="mr-2 h-4 w-4" /> No, it&appos;s incorrect
                         </Button>
                         <Button className="flex-1 bg-primary hover:bg-primary/90" onClick={handleYesCorrect}>
-                          <CheckCircle className="mr-2 h-4 w-4" /> Yes, it's correct
+                          <CheckCircle className="mr-2 h-4 w-4" /> Yes, it&appos;s correct
                         </Button>
                       </div>
                       </>
@@ -539,7 +543,7 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-center">
                   <ImageIcon className="h-24 w-24 text-muted-foreground/30 mb-4" />
-                  <p className="text-muted-foreground">Upload an image and click "Predict Food Item" to see results.</p>
+                  <p className="text-muted-foreground">Upload an image and click Predict Food Item to see results.</p>
                 </div>
               )}
             </TabsContent>
@@ -636,7 +640,7 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
           <DialogHeader>
             <DialogTitle className="flex items-center"><BarChart3 className="mr-2 h-5 w-5 text-primary"/>Top 5 Probabilities</DialogTitle>
             <DialogDescription>
-              Detailed breakdown of the model's top predictions.
+              Detailed breakdown of the model&appos;s top predictions.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
