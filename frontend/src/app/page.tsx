@@ -18,6 +18,7 @@ import {food101SampleItems} from "@/app/foodsamples"
 import { useMutation} from "@tanstack/react-query";
 import Loading from "@/components/Loading";
 import { usePing } from "@/hooks/usePing";
+import Image from "next/image";
 
 // Define a type for the prediction result
 interface PredictionResult {
@@ -132,7 +133,7 @@ export default function HomePage() {
   }
 
 
-  const { mutate: usePredict, isError, isPending } = useMutation({
+  const { mutate: predict} = useMutation({
   mutationFn: async ({ file, model }: PredictArgs) => {
     const formData = new FormData();
     formData.append('file', file);           // file: File object
@@ -177,10 +178,14 @@ export default function HomePage() {
       toast.error("Prediction failed. Please try again.");
     }
   },
-  onError: (error: any) => {
+  onError: (error: unknown) => {
     setIsLoading(false);
     console.error("Prediction error:", error);
-    toast.error(error.message || "An error occurred while fetching prediction. Please try again.");
+    const errorMessage =
+      typeof error === "object" && error !== null && "message" in error
+        ? (error as { message?: string }).message
+        : undefined;
+    toast.error(errorMessage || "An error occurred while fetching prediction. Please try again.");
   }
 });
 
@@ -191,7 +196,7 @@ interface FeedbackArgs {
   response: string;
 }
 
-const {mutate: useFeedback, isPending: isFeedBackPending} = useMutation({
+const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
   mutationFn: async ({model_name , image, predicted , response}: FeedbackArgs) => {
     const formData = new FormData();
     formData.append('model_name', model_name); // model: "model_0" or "model_1"
@@ -235,7 +240,7 @@ const {mutate: useFeedback, isPending: isFeedBackPending} = useMutation({
     setShowFeedbackButtons(false);
     setTopProbabilitiesData([]); // Clear previous probabilities
     
-    usePredict({
+    predict({
       file: selectedImage,
       model: selectedModel
     })
@@ -279,7 +284,7 @@ const {mutate: useFeedback, isPending: isFeedBackPending} = useMutation({
         return;
     }
     setIsSubmitFeedBackLoading(true);
-    useFeedback({
+    feedback({
       model_name: selectedModel,
       image: selectedImage, // Include the image file if available
       predicted: prediction?.name || "",
@@ -396,7 +401,9 @@ const {mutate: useFeedback, isPending: isFeedBackPending} = useMutation({
             >
               {imagePreview ? (
                 <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                  <img src={imagePreview} alt="Selected food" className="object-contain w-full h-full" />
+                  {imagePreview && (
+                    <Image src={imagePreview} alt="Selected food" className="object-contain w-full h-full" fill priority />
+                  )}
                   <Button 
                     variant="destructive" 
                     size="icon" 
