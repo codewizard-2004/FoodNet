@@ -530,10 +530,10 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
                        <h4 className="text-md font-semibold mb-3 text-center">Is this prediction correct?</h4>
                       <div className="flex gap-4">
                         <Button variant="destructive" className="flex-1" onClick={handleNoIncorrect}>
-                          <XCircle className="mr-2 h-4 w-4" /> No, it&appos;s incorrect
+                          <XCircle className="mr-2 h-4 w-4" /> Incorrect
                         </Button>
                         <Button className="flex-1 bg-primary hover:bg-primary/90" onClick={handleYesCorrect}>
-                          <CheckCircle className="mr-2 h-4 w-4" /> Yes, it&appos;s correct
+                          <CheckCircle className="mr-2 h-4 w-4" /> Correct
                         </Button>
                       </div>
                       </>
