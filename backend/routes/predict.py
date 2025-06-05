@@ -27,7 +27,7 @@ async def predict_image(
             raise HTTPException(status_code=400, detail="Invalid image file.")
         
         model = load_model(model_name, device=torch.device(device))  # Change to "cuda" if using GPU
-        class_name, class_id , confidence_scores = predict(model, image)
+        class_name, class_id , confidence_scores = predict(model, model_name, image)
 
         if class_id < 0 or class_id > 101:
             raise HTTPException(status_code=400, detail="Invalid class ID. Should be in range 0-101")

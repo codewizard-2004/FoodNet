@@ -3,9 +3,13 @@ from backend.supabase_client import get_supabase_client
 from fastapi.responses import JSONResponse
 import os
 from uuid import uuid4
+from backend.utils.inference import model_info
+from typing import Optional
+import torch
 
 router = APIRouter()
 BUCKET = os.getenv("SUPABASE_BUCKET")
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 @router.post("/feedback")
 async def submit_feedback(
@@ -60,3 +64,18 @@ async def submit_feedback(
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error at feedback route: {str(e)}")
+    
+
+
+@router.post("/info")
+async def get_model_info(model_name: str = Form(...)):
+    # TODO: Implement actual logic to fetch model info
+    metadata = model_info(model_name, device=torch.device(device))
+
+    if not metadata:
+        raise HTTPException(status_code=400, detail=f"Error at get_model_info for {model_name}")
+    print(metadata)
+    return JSONResponse(
+        metadata
+    )
+    

@@ -74,6 +74,16 @@ export default function HomePage() {
   ]
   const [selectedModel, setSelectedModel] = useState(models[0].name); // Default model
 
+  const [modelInfo, setModelInfo] = useState({
+    title: "",
+    arch: "",
+    desc: "",
+    parameters: 0,
+    size: "",
+    "train accuracy": 0,
+    "training images": 0
+  })
+
   useEffect(() => {
     setMounted(false);
   }, []);
@@ -189,6 +199,38 @@ export default function HomePage() {
   }
 });
 
+interface ModelInfo{
+  model_name: string
+}
+
+const {mutate: model_info, isPending: model_info_loading} = useMutation({
+  mutationFn: async ({ model_name }: ModelInfo) => {
+    const formData = new FormData();
+    formData.append("model_name", model_name);
+
+    const res = await fetch(`${backendUrl}/info`, {
+      method: "POST",
+      body: formData
+    });
+    if (!res.ok) throw new Error('Failed to fetch model info');
+
+    const data = await res.json();
+
+    return data
+  },
+  onSuccess: (data) => {
+    setModelInfo(data);
+  },
+  onError: (error: unknown) => {
+    console.error("Model Info error:", error);
+    const errorMessage =
+      typeof error === "object" && error !== null && "message" in error
+        ? (error as { message?: string }).message
+        : undefined;
+    toast.error(errorMessage || "An error occurred while trying to fetch model info. Please try again.");
+  }
+})
+
 interface FeedbackArgs {
   model_name: string;
   image: File | null;
@@ -297,6 +339,11 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
     
   };
 
+  useEffect(()=>{
+    model_info({ model_name: selectedModel })
+    console.log(modelInfo)
+  }, [selectedModel])
+
   const handleViewTopProbabilities = () => {
     setIsProbabilitiesModalOpen(true);
     setIsLoadingProbabilities(false);
@@ -353,9 +400,11 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
           <h1 className="text-2xl font-bold">FoodVision</h1>
         </div>
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon">
-            <Github className="h-5 w-5" />
-          </Button>
+          <a href="https://github.com/codewizard-2004" target="_blank" rel="noopener noreferrer">
+            <Button variant="ghost" size="icon">
+              <Github className="h-5 w-5" />
+            </Button>
+          </a>
           <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
             {theme === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
             <span className="sr-only">Toggle theme</span>
@@ -552,7 +601,7 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
               <Card className="shadow-none border-none h-full">
                 <CardHeader className="flex flex-row justify-between items-start">
                   <div>
-                    <CardTitle className="text-xl">EfficientNet-B0</CardTitle>
+                    <CardTitle className="text-xl">{modelInfo?.title || null}</CardTitle>
                     <CardDescription>Model Specifications & Performance</CardDescription>
                   </div>
                   <Badge variant="outline" className="border-green-500 text-green-500">Active</Badge>
@@ -560,41 +609,41 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
                 <CardContent className="space-y-6 text-sm">
                   <div>
                     <h3 className="font-semibold mb-1 flex items-center"><Lightbulb className="h-4 w-4 mr-2 text-primary" />Model Architecture</h3>
-                    <p className="text-muted-foreground">EfficientNet architecture with compound scaling method that uniformly scales all dimensions of depth/width/resolution using a compound coefficient.</p>
+                    <p className="text-muted-foreground">{modelInfo?.arch || null}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                     <div className="flex items-center space-x-2">
                       <Zap className="h-4 w-4 text-primary" />
                       <div>
                         <p className="font-medium">Accuracy</p>
-                        <p className="text-muted-foreground">91.2%</p>
+                        <p className="text-muted-foreground">{modelInfo["train accuracy"] || null}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Scale className="h-4 w-4 text-primary" />
                       <div>
-                        <p className="font-medium">Inference Time</p>
-                        <p className="text-muted-foreground">35 ms</p>
+                        <p className="font-medium">No. of parameters</p>
+                        <p className="text-muted-foreground">{modelInfo.parameters.toLocaleString()}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       <ImageIcon className="h-4 w-4 text-primary" />
                       <div>
                         <p className="font-medium">Model Size</p>
-                        <p className="text-muted-foreground">29 MB</p>
+                        <p className="text-muted-foreground">{modelInfo?.size || 0}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Brain className="h-4 w-4 text-primary" />
                       <div>
                         <p className="font-medium">Training Data</p>
-                        <p className="text-muted-foreground">25000 images</p>
+                        <p className="text-muted-foreground">{modelInfo["training images"]} images</p>
                       </div>
                     </div>
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Description</h3>
-                    <p className="text-muted-foreground">A compact and efficient model optimized for mobile and edge devices. Achieves good accuracy while maintaining low inference time.</p>
+                    <p className="text-muted-foreground">{modelInfo?.desc || null}</p>
                   </div>
                   <Button variant="link" className="p-0 h-auto text-primary hover:text-primary/80">
                     View Research Paper <FileText className="ml-2 h-4 w-4" />
