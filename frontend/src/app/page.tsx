@@ -203,7 +203,7 @@ interface ModelInfo{
   model_name: string
 }
 
-const {mutate: model_info, isPending: model_info_loading} = useMutation({
+const {mutate: model_info} = useMutation({
   mutationFn: async ({ model_name }: ModelInfo) => {
     const formData = new FormData();
     formData.append("model_name", model_name);
@@ -341,7 +341,6 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
 
   useEffect(()=>{
     model_info({ model_name: selectedModel })
-    console.log(modelInfo)
   }, [selectedModel])
 
   const handleViewTopProbabilities = () => {
