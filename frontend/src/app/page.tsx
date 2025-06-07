@@ -69,8 +69,7 @@ export default function HomePage() {
   const [filteredPredictableItems, setFilteredPredictableItems] = useState<string[]>(food101SampleItems);
    const models = [
     {name: "pizza_steak_sushi", displayName:" TinyVGG Beta"},
-    { name: "model_0", displayName: "Model 0"},
-    { name: "model_1", displayName: "Model 1"},
+    {name: "vgg_lite", displayName: "VGG16 Lite"}
   ]
   const [selectedModel, setSelectedModel] = useState(models[0].name); // Default model
 

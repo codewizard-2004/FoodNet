@@ -32,6 +32,11 @@ model_map = {
                 "cls":arch.TinyVGG_v0,
                 "transform": test_transform
                 },
+    "vgg_lite":{
+        "path":"backend/models/vgg16_lite_pizza_steak_sushi.pt",
+        "cls":arch.VGG16Lite,
+        "transform":test_transform2
+        },
     "pizza_steak_sushi": {"path":"backend/models/pizza_steak_sushi.pth.pt",
                           "cls":arch.TinyVGG,
                           "transform":test_transform2
@@ -55,11 +60,10 @@ def load_model(model_name: str, device: torch.device) -> torch.nn.Module:
     
     
     model_path = model_map[model_name]["path"]
-    if model_name == "pizza_steak_sushi":
-        checkpoint = torch.load(model_path, map_location=device)
-        state_dict = checkpoint["model_state_dict"]
-    else:
-        state_dict = torch.load(model_path, map_location=device, weights_only=True)
+    checkpoint = torch.load(model_path, map_location=device)
+    state_dict = checkpoint["model_state_dict"]
+
+    
     model = model_map[model_name]["cls"](input_layer=3, hidden_layer=10, output_layer=len(classes)).to(device)
     print(model)
     model.load_state_dict(state_dict)
