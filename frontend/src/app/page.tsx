@@ -399,7 +399,7 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
           <h1 className="text-2xl font-bold">FoodVision</h1>
         </div>
         <div className="flex items-center space-x-4">
-          <a href="https://github.com/codewizard-2004" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/codewizard-2004/PyTorch-Image-Recognition" target="_blank" rel="noopener noreferrer">
             <Button variant="ghost" size="icon">
               <Github className="h-5 w-5" />
             </Button>
