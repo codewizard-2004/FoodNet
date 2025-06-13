@@ -423,7 +423,7 @@ const {mutate: feedback, isPending: isFeedBackPending} = useMutation({
             </CardHeader>
             <CardContent>
               <Select onValueChange={(value) => {
-                console.log("Selected model:", selectedModel);
+                setActiveTab("model-info");
                 setSelectedModel(value)}} value={selectedModel} >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a model" />
