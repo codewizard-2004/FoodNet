@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torchvision.models as models
 
 class TinyVGG(nn.Module):
     def __init__(self , input_layer: int, hidden_layer:int, output_layer:int, dropout_rate: float = 0.25)->None:
@@ -150,3 +151,12 @@ class VGG16Lite(nn.Module):
         x = self.conv_block_3(x)
         x = self.global_pool(x)
         return self.classifier(x)
+
+def create_resnet_model() -> torch.nn.Module:
+    
+    resnet18 = models.resnet18(pretrained = True)
+    num_classes = 3
+    resnet18.fc = nn.Linear(resnet18.fc.in_features, num_classes)
+
+    return resnet18
+     

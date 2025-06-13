@@ -1,7 +1,7 @@
 #The functions in this fi=le are used to load the model and make predictions
 
 import torch
-from torchvision import transforms
+from torchvision import transforms, models
 from PIL import Image
 from typing import List, Tuple, Dict
 import backend.models.architecture as arch
@@ -40,7 +40,12 @@ model_map = {
     "pizza_steak_sushi": {"path":"backend/models/pizza_steak_sushi.pth.pt",
                           "cls":arch.TinyVGG,
                           "transform":test_transform2
-                          }
+                          },
+    "resnet18": {
+        "path": "backend/models/resnet18lite.pt",
+        "cls": arch.create_resnet_model(),
+        "transform": test_transform2
+    }
 }
 
 classes = ["Pizza", "Steak" , "Sushi"]
@@ -58,14 +63,14 @@ def load_model(model_name: str, device: torch.device) -> torch.nn.Module:
     if model_name not in model_map:
         raise ValueError(f"Model {model_name} not found.")
     
-    
     model_path = model_map[model_name]["path"]
     checkpoint = torch.load(model_path, map_location=device)
     state_dict = checkpoint["model_state_dict"]
 
-    
-    model = model_map[model_name]["cls"](input_layer=3, hidden_layer=10, output_layer=len(classes)).to(device)
-    print(model)
+    if model_name == "resnet18":
+        model = arch.create_resnet_model().to(device)
+    else:
+        model = model_map[model_name]["cls"](input_layer=3, hidden_layer=10, output_layer=len(classes)).to(device)
     model.load_state_dict(state_dict)
     return model
 

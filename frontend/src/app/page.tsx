@@ -68,8 +68,9 @@ export default function HomePage() {
   const [predictableItemsSearchTerm, setPredictableItemsSearchTerm] = useState("");
   const [filteredPredictableItems, setFilteredPredictableItems] = useState<string[]>(food101SampleItems);
    const models = [
-    {name: "pizza_steak_sushi", displayName:" TinyVGG Beta"},
-    {name: "vgg_lite", displayName: "VGG16 Lite"}
+    {name: "pizza_steak_sushi", displayName:" TinyVGG"},
+    {name: "vgg_lite", displayName: "VGG16 Lite"},
+    {name: "resnet18", displayName: "ResNet18"}
   ]
   const [selectedModel, setSelectedModel] = useState(models[0].name); // Default model
 
