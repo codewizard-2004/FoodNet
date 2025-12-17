@@ -78,11 +78,11 @@ We welcome contributions! To get started:
 * For major changes, open an issue first to discuss what you’d like to change.
 ---
 ### 📸 Screenshots
-![home image](./frontend/src/assets/images/home.png)
+![home image](./frontend/src/assets/home.png)
 
-![result image](./frontend/src/assets/images/result.png)
+![result image](./frontend/src/assets/result.png)
 
-![confidence image](./frontend/src/assets/images/confidence.png)
+![nutrition insights](./frontend/src/assets/details.png)
 ---
 ### ✨ Extras
 * Demo: [Live App on Vercel](https://food-net.vercel.app/)

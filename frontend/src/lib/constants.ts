@@ -8,5 +8,5 @@ export const MODELS = [
 
 export type ModelId = (typeof MODELS)[number]["id"];
 
-export const GITHUB_REPO_URL = "https://github.com/your-repo/foodvision"; // Placeholder
-export const PYTORCH_MODEL_REPO_URL = "https://github.com/your-repo/foodvision-pytorch"; // Placeholder
+export const GITHUB_REPO_URL = "https://github.com/codewizard-2004/FoodNet.git";
+export const PYTORCH_MODEL_REPO_URL = "https://github.com/codewizard-2004/PyTorch-Image-Recognition.git"; // Placeholder
