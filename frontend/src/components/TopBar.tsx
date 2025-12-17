@@ -30,10 +30,13 @@ export function TopBar() {
                     <Github className="w-5 h-5" />
                     <span className="absolute -top-1 -right-1 text-[10px] bg-emerald-600 text-white px-1 rounded-full">AI</span>
                 </Link>
-                <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-all">
+                <Link
+                    href="/about"
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-all"
+                >
                     <Info className="w-4 h-4" />
                     About
-                </button>
+                </Link>
             </div>
         </header>
     );
