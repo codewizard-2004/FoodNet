@@ -1,91 +1,85 @@
-# 🍕🥩🍣 FoodNet
+# FoodVision API Backend
 
-FoodNet is a modern web application that uses deep learning to recognize food items from images and provide nutritional information. Upload a food photo, and FoodNet will predict the dish and show you its calories, protein, carbs, fat, fiber, and sugar content. The app is designed for foodies, fitness enthusiasts, and anyone curious about what's on their plate!
+This is the FastAPI backend for the FoodVision project, designed to classify food images (pizza, steak, sushi) using ONNX models.
 
----
+## Features
 
-## 🚀 Features
-- **Image Upload & Prediction:** Upload or drag-and-drop a food image to get instant predictions.
-- **Nutritional Info:** See detailed nutrition facts for the predicted food item.
-- **Model Selection:** Choose between different trained models (TinyVGG, Model 0, Model 1).
-- **Top 5 Probabilities:** View the model's top 5 guesses and their confidence scores.
-- **Feedback System:** Help improve the model by submitting corrections if the prediction is wrong.
-- **Predictable Items List:** Browse/search the list of foods the model can recognize.
-- **Modern UI:** Responsive, clean, and user-friendly interface built with Next.js and Tailwind CSS.
+- **FastAPI Framework**: High-performance, easy-to-use web framework.
+- **ONNX Runtime**: Efficient inference for machine learning models.
+- **Model Management**: Dynamic loading and unloading of models to optimize memory usage.
+- **Image Preprocessing**: Automatic resizing (224x224 for standard models, 64x64 for LeNet) and normalization.
+- **Memory Monitoring**: Endpoint to track RAM usage.
 
----
+## Setup
 
-## 🛠️ Tech Stack
-- **Frontend:** Next.js 15, React, TypeScript, Tailwind CSS, Shadcn UI, React Query
-- **Backend:** FastAPI, Python, PyTorch, Supabase (for data storage/feedback)
-- **Deployment:** Vercel (frontend), Render (backend)
-- **Other:** Supabase, dotenv, PIL, TorchVision
+1.  **Create Virtual Environment** (optional but recommended):
+    ```bash
+    python -m venv backvenv
+    source backvenv/bin/activate  # Linux/Mac
+    .\backvenv\Scripts\activate   # Windows
+    ```
 
----
+2.  **Install Dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-## 🖥️ Local Setup
+## Usage
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/yourusername/FoodNet.git
-cd FoodNet
-```
-### 2. Backend Setup
+Run the server using `uvicorn`:
 
 ```bash
-cd backend
-python -m venv backvenv
-# Activate the virtual environment (Windows)
-.\backvenv\Scripts\Activate.ps1
-# Or (Linux/macOS)
-source backvenv/bin/activate
-pip install -r requirements.txt
-# Add your .env file with SUPABASE_URL, SUPABASE_KEY, SUPABASE_BUCKET
-python -m uvicorn backend.server:app --reload
+uvicorn app.main:app --reload
 ```
-### 3. Frontend Setup
-```bash
-cd ../frontend
-npm install
-# Add your .env.local with NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
-npm run dev
-```
-* Visit http://localhost:3000 in your browser.
+The API will be available at `http://127.0.0.1:8000`.
 
----
-### 🌱 Future Plans
+## API Endpoints
 
-* Full Food101 Support: Expand model to recognize all 101 classes from the Food101 dataset.
-* User Accounts: Allow users to save predictions and track nutrition history.
-* Mobile App: Build a cross-platform mobile version.
-* Better Nutrition Data: Integrate with more comprehensive nutrition APIs.
-* Model Improvements: Experiment with EfficientNet, ResNet, and other architectures.
-* Internationalization: Support for multiple languages.
----
-### 🤝 Contributing
+### 1. Health Check
+*   **URL**: `/`
+*   **Method**: `GET`
+*   **Description**: Returns server status.
+*   **Response**: `{"status": "ok"}`
 
-We welcome contributions! To get started:
+### 2. Predict Image Class
+*   **URL**: `/predict/{model_name}`
+*   **Method**: `POST`
+*   **Description**: Upload an image to get a classification prediction.
+*   **Path Parameters**:
+    *   `model_name`: Name of the model to use (e.g., `resnet18`, `lenet64`, `tinyvgg`).
+*   **Body**: `form-data` with key `file` (image file).
+*   **Response**:
+    ```json
+    {
+        "model": "resnet18",
+        "prediction": "pizza",
+        "confidence": 0.98,
+        "probabilities": {
+            "pizza": 0.98,
+            "steak": 0.01,
+            "sushi": 0.01
+        }
+    }
+    ```
 
-1. Fork this repo and create a new branch for your feature or bugfix.
-2. Follow the code style and add clear comments.
-3. Test your changes locally.
-4. Open a pull request with a clear description of your changes.
+## Directory Structure
 
-<h3>Please:</h3>
+*   `app/`: Main application source code.
+    *   `main.py`: API routes and configuration.
+    *   `model_manager.py`: Handles loading/unloading ONNX models.
+    *   `preprocessing.py`: Image transformation logic.
+    *   `inference.py`: ONNX Runtime execution logic.
+    *   `models/`: Directory storing `.onnx` model files.
 
-* Be respectful and constructive in discussions.
-* Open issues for bugs, feature requests, or questions.
-* For major changes, open an issue first to discuss what you’d like to change.
----
-### 📸 Screenshots
-![home image](./frontend/src/assets/home.png)
+## Supported Models
 
-![result image](./frontend/src/assets/result.png)
+Ensure these models are present in `app/models/`:
+- `resnet18.onnx`
+- `lenet64.onnx`
+- `tinyvgg.onnx`
 
-![nutrition insights](./frontend/src/assets/details.png)
----
-### ✨ Extras
-* Demo: [Live App on Vercel](https://food-net.vercel.app/)
-* Backend: [Live API on Render](https://foodnet-vs3e.onrender.com/)
-* Contact: amalv2004@gmail.com
-* Inspiration: Built for food lovers, by food lovers!
+## Future Plans
+
+- Add more models
+- Add RAG system to provide nutrition facts, cooking
+
