@@ -1,92 +1,51 @@
-#Server file
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-import io
-from PIL import Image
+### This is the main server file for the foodnet RAG system
+### The system uses FastAPI to create a REST API for the foodnet RAG system
+### The system uses gemini-2.5-flash to generate responses
+### The system uses ChromaDB to store the documents
+### The system uses LangChain to create pipelines for document processing
 
-from app.model_manager import ModelManager
-from app.preprocessing import preprocess
-from app.inference import run_inference
-# from app.memory import get_memory_mb
+from fastapi import FastAPI
+from app.api.routes import router
+import psutil
+import os
 
 app = FastAPI(
-    title = "FoodVision API",
-    description = "API for food image classification",
-    version = "1.0.0"
+    title="FoodNet RAG System",
+    description="FoodNet RAG System",
+    version="1.0.0",
 )
 
-# create model manager instance
-model_manager = ModelManager()
+def get_memory_mb() -> float:
+    process = psutil.Process(os.getpid())
+    mem_bytes = process.memory_info().rss
+    return mem_bytes / (1024 ** 2)
 
-# CORS configuration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for development; restrict in production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-CLASSES = ["pizza", "steak", "sushi"]
 
 @app.get("/")
-async def root():
-    return {"status": "ok"}
-
-@app.post("/predict/{model_name}")
-async def predict(
-    model_name: str,
-    file: UploadFile = File(...)):
-    """
-    Predict the class of the image using the specified model.
-    Args:
-        model_name (str): Name of the model to use for prediction.
-        file (UploadFile): Image file to be predicted.
-    Returns:
-        list: list containing probabilities of each class.
-    """
-    # ---- Load image safely ----
-    try:
-        if not file.filename:
-            raise HTTPException(status_code=400, detail="No file uploaded")
-        
-        image_bytes = await file.read()
-        image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Failed to load image: " + str(e))
-    
-    # ---- load the model ----
-    try:
-        session = model_manager.load(model_name)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Failed to load model: " + str(e))
-    
-    # ---- preprocess the image ----
-    try:
-        input_array = preprocess(image, model_name)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Failed to preprocess image: " + str(e))
-    
-    # ---- run inference ----
-    try:
-        pred_index, probs = run_inference(session, input_array)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Failed to run inference: " + str(e))
-    
+def health_check():
     return {
-        "model": model_name,
-        "prediction": CLASSES[pred_index],
-        "confidence": float(probs[pred_index]),
-        "probabilities":{
-            CLASSES[i]: float(probs[i]) for i in range(len(CLASSES))
-        }
+        "status": "ok", 
+        "version": "1.0.0",
+        "service": "FoodNet RAG System",
+        "memory": f"{round(get_memory_mb(), 2)} MB",
+        "routes": [
+            {
+                "method": "POST",
+                "path": "/api/recipe",
+                "description": "Generate information for a given food item."
+            },
+            {
+                "method": "GET",
+                "path": "/api/nutrition",
+                "description": "Get nutrition information for a given food item."
+            },
+            {
+                "method":"POST",
+                "path": "/api/save",
+                "description": "Save incorrect prediction to database"
+            }
+        ]
     }
 
-# @app.get("/memory")
-# def memory_usage():
-#     return {
-#         "memory_mb": round(get_memory_mb(), 2)
-#     }
-
-
-
+app.include_router(router, prefix="/api")
