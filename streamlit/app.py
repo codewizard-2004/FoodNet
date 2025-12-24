@@ -5,13 +5,13 @@ import pandas as pd
 import plotly.express as px
 
 # Configuration
-API_URL = "http://localhost:8000"
+API_URL = "https://foodnet-backend.onrender.com/"
 MODELS = ["resnet18", "lenet64", "tinyvgg"]
 
 def main():
-    st.set_page_config(page_title="FoodNet Tester", page_icon="🍕", layout="wide")
+    st.set_page_config(page_title="FoodNet", page_icon="🍕", layout="wide")
     
-    st.title("FoodNet Backend Tester 🍕🥩🍣")
+    st.title("FoodNet 🍕🥩🍣")
     st.markdown("Upload an image to classify it as **Pizza**, **Steak**, or **Sushi**.")
 
     # Sidebar
