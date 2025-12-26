@@ -98,7 +98,8 @@ We welcome contributions! To get started:
 ![nutrition insights](./frontend/src/assets/details.png)
 ---
 ### ✨ Extras
-* Demo: [Live App on Vercel](https://food-net.vercel.app/)
-* Backend: [Live API on Render](https://foodnet-vs3e.onrender.com/)
+* Demo: [Live App on Vercel](https://food-net-t29k.vercel.app/)
+* Main Backend: [Live API on Render](https://foodnet-backend.onrender.com)
+* RAG Backend: [Live API on Render](https://foodnet-rag.onrender.com)
 * Contact: amalv2004@gmail.com
 * Inspiration: Built for food lovers, by food lovers!
