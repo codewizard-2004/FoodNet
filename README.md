@@ -1,85 +1,128 @@
-# FoodVision API Backend
+# FoodNet-RAG Server
 
-This is the FastAPI backend for the FoodVision project, designed to classify food images (pizza, steak, sushi) using ONNX models.
+A high-performance, lightweight microservice built with **FastAPI** and **LangChain**. This server provides Retrieval-Augmented Generation (RAG) capabilities to fetch detailed food recipes and context-aware cooking videos.
 
-## Features
+It is designed to run alongside the main FoodNet CNN prediction server, offloading heavy NLP and external API tasks.
 
-- **FastAPI Framework**: High-performance, easy-to-use web framework.
-- **ONNX Runtime**: Efficient inference for machine learning models.
-- **Model Management**: Dynamic loading and unloading of models to optimize memory usage.
-- **Image Preprocessing**: Automatic resizing (224x224 for standard models, 64x64 for LeNet) and normalization.
-- **Memory Monitoring**: Endpoint to track RAM usage.
+## 🚀 Features
 
-## Setup
+* **RAG Engine:** Uses **Google Gemini 1.5 Flash** and **Pinecone** (Serverless) to retrieve accurate recipe details from local Markdown knowledge bases.
+* **Smart Indexing:** Auto-detects new data, initializes vector indexes, and handles API rate limits (Safe Mode) gracefully.
+* **Structured Output:** Guarantees strict JSON responses for ingredients and instructions using Pydantic models.
+* **Video Integration:** Fetches top-rated cooking tutorials from YouTube without requiring a paid API key.
+* **Modern Stack:** Built with `uv` for lightning-fast dependency management and **Python 3.11**.
 
-1.  **Create Virtual Environment** (optional but recommended):
-    ```bash
-    python -m venv backvenv
-    source backvenv/bin/activate  # Linux/Mac
-    .\backvenv\Scripts\activate   # Windows
-    ```
+## 🛠️ Tech Stack
 
-2.  **Install Dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
+* **Framework:** FastAPI + Uvicorn
+* **LLM & Embeddings:** Google Gemini (`gemini-1.5-flash`, `text-embedding-004`)
+* **Vector Database:** Pinecone (Serverless)
+* **Orchestration:** LangChain (v0.3+)
+* **Package Manager:** uv
 
-## Usage
+---
 
-Run the server using `uvicorn`:
+## ⚙️ Setup & Installation
+
+### Prerequisites
+* Python 3.11+
+* [uv](https://github.com/astral-sh/uv) installed
+* API Keys for Google Gemini and Pinecone
+
+### 1. Clone & Install
+```bash
+git clone [https://github.com/your-username/foodnet-rag.git](https://github.com/your-username/foodnet-rag.git)
+cd foodnet-rag
+
+# Install dependencies and sync virtual environment
+uv sync
+```
+### 2. Environment Variables
+Create a .env file in the root directory:
 
 ```bash
-uvicorn app.main:app --reload
+GOOGLE_API_KEY=your_google_ai_key
+PINECONE_API_KEY=your_pinecone_key
 ```
-The API will be available at `http://127.0.0.1:8000`.
 
-## API Endpoints
+### 3. Prepare Data
+Place your knowledge base files (Markdown format) in the data/ folder.
 
-### 1. Health Check
-*   **URL**: `/`
-*   **Method**: `GET`
-*   **Description**: Returns server status.
-*   **Response**: `{"status": "ok"}`
+- data/pizza.md
+- data/sushi.md
+- ...
 
-### 2. Predict Image Class
-*   **URL**: `/predict/{model_name}`
-*   **Method**: `POST`
-*   **Description**: Upload an image to get a classification prediction.
-*   **Path Parameters**:
-    *   `model_name`: Name of the model to use (e.g., `resnet18`, `lenet64`, `tinyvgg`).
-*   **Body**: `form-data` with key `file` (image file).
-*   **Response**:
-    ```json
-    {
-        "model": "resnet18",
-        "prediction": "pizza",
-        "confidence": 0.98,
-        "probabilities": {
-            "pizza": 0.98,
-            "steak": 0.01,
-            "sushi": 0.01
-        }
-    }
-    ```
+### 4. Run Locally
+```bash
+uv run app/main.py
+```
+The server will start at http://localhost:8000. On the first run, it will automatically index your data into Pinecone.
 
-## Directory Structure
+### 📂 Project Structure
+```
+foodnet-rag/
+├── app/
+│   ├── api/
+│   │   └── routes.py         # API Endpoints
+│   ├── core/
+│   │   └── config.py         # Settings & Env Vars
+│   ├── services/
+│   │   ├── rag_service.py    # LangChain & Pinecone Logic
+│   │   └── youtube_service.py# YouTube Scraper
+│   ├── schemas.py            # Pydantic Data Models
+│   └── main.py               # Application Entry Point
+├── data/                     # Markdown Knowledge Base
+├── pyproject.toml            # Dependencies
+└── README.md
+```
+### 📡 API Documentation
+#### 1. Get Recipe Details (RAG)
+Retrieves structured ingredients and instructions based on the knowledge base.
 
-*   `app/`: Main application source code.
-    *   `main.py`: API routes and configuration.
-    *   `model_manager.py`: Handles loading/unloading ONNX models.
-    *   `preprocessing.py`: Image transformation logic.
-    *   `inference.py`: ONNX Runtime execution logic.
-    *   `models/`: Directory storing `.onnx` model files.
+* Endpoint: POST /api/recipe
 
-## Supported Models
+Body:
 
-Ensure these models are present in `app/models/`:
-- `resnet18.onnx`
-- `lenet64.onnx`
-- `tinyvgg.onnx`
+```JSON
+{
+  "food_name": "Sushi"
+}
+```
+Response:
+```JSON
+{
+  "food": "Sushi",
+  "ingredients": [
+    "Sushi rice",
+    "Nori sheets",
+    "Fresh fish (salmon or tuna)"
+  ],
+  "instructions": [
+    "Wash the rice thoroughly.",
+    "Cook rice and season with vinegar.",
+    "Roll the ingredients in nori."
+  ]
+}
+```
 
-## Future Plans
+#### 2. Get Cooking Video
+Fetches the most relevant YouTube tutorial.
 
-- Add more models
-- Add RAG system to provide nutrition facts, cooking
+* Endpoint: POST /api/video
 
+Body:
+
+```JSON
+{
+  "food_name": "Sushi"
+}
+```
+Response:
+```JSON
+{
+  "title": "How to Make Sushi at Home",
+  "url": "[https://www.youtube.com/watch?v=](https://www.youtube.com/watch?v=)...",
+  "thumbnail": "[https://img.youtube.com/](https://img.youtube.com/)...",
+  "duration": "10:45"
+}
+```
