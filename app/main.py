@@ -6,20 +6,31 @@
 
 from fastapi import FastAPI
 from app.api.routes import router
+from app.services.rag_service import rag_service
+from contextlib import asynccontextmanager
 import psutil
 import os
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Load RAG system
+    print("Initializing RAG Service...")
+    await rag_service.initialize()
+    yield
+    # Shutdown: Clean up if needed
+    print("Shutting down...")
 
 app = FastAPI(
     title="FoodNet RAG System",
     description="FoodNet RAG System",
     version="1.0.0",
+    lifespan=lifespan
 )
 
 def get_memory_mb() -> float:
     process = psutil.Process(os.getpid())
     mem_bytes = process.memory_info().rss
     return mem_bytes / (1024 ** 2)
-
 
 
 @app.get("/")

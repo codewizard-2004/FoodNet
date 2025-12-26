@@ -1,40 +1,30 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-
-#from app.rag.chain import get_rag_chain
+from app.schemas import FoodRequest, RecipeResponse, VideoResponse
+from app.services.rag_service import rag_service
+from app.services.youtube_service import get_cooking_videos
 
 router = APIRouter()
 
-class RecipeRequest(BaseModel):
-    food: str
-
-class RecipeResponse(BaseModel):
-    food: str
-    instructions: str
-    ingredients: list[str]
-
-@router.get("/recipe", response_model=RecipeResponse)
-def generate_recipe(request: RecipeRequest):
+@router.post("/recipe", response_model=RecipeResponse)
+async def get_recipe_details(request: FoodRequest):
     """
-    Generate grounded preparation instructions for a given food item.
+    Endpoint 1: Returns structured recipe data (JSON) using RAG.
     """
-
-    food_label = request.food.lower().strip()
-
-    if not food_label:
-        raise HTTPException(status_code=400, detail="Food item cannot be empty")
-
     try:
-        # rag_chain = get_rag_chain()
-        # instructions = rag_chain.invoke({"food": food_label})
-        print("Generating recipe for", food_label)
-        return {
-            "food": food_label,
-            "instructions": "Step 1: Preheat oven. Step 2: Cook.",
-            "ingredients": ["Salt", "Pepper", "Main Item"]
-        }
+        # Returns the Pydantic object directly
+        recipe_data = await rag_service.get_recipe(request.food_name)
+        return recipe_data
     except Exception as e:
-        raise HTTPException(status_code=500, detail = "Failed to generate recipe\n"+ str(e))
-        
-        
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/video", response_model=VideoResponse)
+async def get_food_video(request: FoodRequest):
+    """
+    Endpoint 2: Returns the best matching YouTube video.
+    """
+    video_data = get_cooking_videos(request.food_name)
     
+    if not video_data:
+        raise HTTPException(status_code=404, detail="No video found")
+        
+    return video_data

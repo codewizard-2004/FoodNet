@@ -1,0 +1,15 @@
+[project]
+name = "foodnet-rag"
+version = "0.1.0"
+description = "This is the module that contains the RAG server of foodnet app"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi[standard]>=0.127.0",
+    "langchain-google-genai>=4.1.2",
+    "langchain-pinecone>=0.2.13",
+    "langchain-text-splitters>=1.1.0",
+    "psutil>=7.2.0",
+    "python-dotenv>=1.2.1",
+    "youtube-search>=2.2.0",
+]
