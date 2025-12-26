@@ -1,4 +1,5 @@
 export const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://127.0.0.1:8000";
+export const RAG_URL = process.env.NEXT_PUBLIC_RAG_URL || "http://127.0.0.1:8001";
 
 export const MODELS = [
     { id: "resnet18", name: "ResNet 18" },

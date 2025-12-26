@@ -4,3 +4,4 @@
 .gitignore
 streamlit/uivenv/
 venv
+.venv

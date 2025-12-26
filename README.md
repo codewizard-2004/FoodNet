@@ -10,16 +10,29 @@ FoodNet is a modern web application that uses deep learning to recognize food it
 - **Model Selection:** Choose between different trained models (TinyVGG, Model 0, Model 1).
 - **Top 5 Probabilities:** View the model's top 5 guesses and their confidence scores.
 - **Feedback System:** Help improve the model by submitting corrections if the prediction is wrong.
+- **Recipe & Video Insights:** Get AI-curated recipe background, ingredients, and relevant cooking videos (powered by RAG).
 - **Predictable Items List:** Browse/search the list of foods the model can recognize.
 - **Modern UI:** Responsive, clean, and user-friendly interface built with Next.js and Tailwind CSS.
 
 ---
 
+---
+
+## 🧠 AI & RAG Integration
+FoodNet goes beyond simple classification by integrating a **Retrieval-Augmented Generation (RAG)** server. 
+- **Video Insights:** Fetches context-aware YouTube cooking tutorials for the predicted dish.
+- **Recipe Details:** Provides a rich background description and a list of key ingredients.
+- **Proxy Server:** Leverages Next.js API routes to securely proxy requests to the RAG backend, ensuring smooth cross-origin resource sharing (CORS).
+
+---
+
 ## 🛠️ Tech Stack
 - **Frontend:** Next.js 15, React, TypeScript, Tailwind CSS, Shadcn UI, React Query
-- **Backend:** FastAPI, Python, PyTorch, Supabase (for data storage/feedback)
+- **Backend:** FastAPI
+- **Database:** Supabase (for data storage/feedback), Pinecone (for vector storage)
 - **Deployment:** Vercel (frontend), Render (backend)
-- **Other:** Supabase, dotenv, PIL, TorchVision
+- **RAG:** Langchain, GoogleGenerativeAI
+- **ML:** PyTorch, ONNX Runtime 
 
 ---
 
@@ -47,7 +60,7 @@ python -m uvicorn backend.server:app --reload
 ```bash
 cd ../frontend
 npm install
-# Add your .env.local with NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+# Add your .env.local with NEXT_PUBLIC_BACKEND_URL=http://localhost:8000 and NEXT_PUBLIC_RAG_URL=...
 npm run dev
 ```
 * Visit http://localhost:3000 in your browser.
